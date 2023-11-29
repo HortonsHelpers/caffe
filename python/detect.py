@@ -157,7 +157,7 @@ def main(argv):
     if args.output_file.lower().endswith('csv'):
         # csv
         # Enumerate the class probabilities.
-        class_cols = ['class{}'.format(x) for x in range(NUM_OUTPUT)]
+        class_cols = [f'class{x}' for x in range(NUM_OUTPUT)]
         df[class_cols] = pd.DataFrame(
             data=np.vstack(df['feat']), index=df.index, columns=class_cols)
         df.to_csv(args.output_file, cols=COORD_COLS + class_cols)

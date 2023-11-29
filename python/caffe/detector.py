@@ -72,9 +72,7 @@ class Detector(caffe.Net):
         window_inputs = []
         for image_fname, windows in images_windows:
             image = caffe.io.load_image(image_fname).astype(np.float32)
-            for window in windows:
-                window_inputs.append(self.crop(image, window))
-
+            window_inputs.extend(self.crop(image, window) for window in windows)
         # Run through the net (warping windows to input dimensions).
         in_ = self.inputs[0]
         caffe_in = np.zeros((len(window_inputs), window_inputs[0].shape[2])

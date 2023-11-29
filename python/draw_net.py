@@ -38,22 +38,21 @@ def parse_args():
                               'multiplier, when non-zero, for the learning '
                               'layers (Convolution, Deconvolution, InnerProduct).'))
 
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
 def main():
     args = parse_args()
     net = caffe_pb2.NetParameter()
     text_format.Merge(open(args.input_net_proto_file).read(), net)
-    print('Drawing net to %s' % args.output_image_file)
+    print(f'Drawing net to {args.output_image_file}')
     phase=None;
     if args.phase == "TRAIN":
         phase = caffe.TRAIN
     elif args.phase == "TEST":
         phase = caffe.TEST
     elif args.phase != "ALL":
-        raise ValueError("Unknown phase: " + args.phase)
+        raise ValueError(f"Unknown phase: {args.phase}")
     caffe.draw.draw_net_to_file(net, args.output_image_file, args.rankdir,
                                 phase, args.display_lrm)
 

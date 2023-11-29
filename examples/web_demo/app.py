@@ -19,7 +19,7 @@ import caffe
 
 REPO_DIRNAME = os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '/../..')
 UPLOAD_FOLDER = '/tmp/caffe_demos_uploads'
-ALLOWED_IMAGE_EXTENSIONS = set(['png', 'bmp', 'jpg', 'jpe', 'jpeg', 'gif'])
+ALLOWED_IMAGE_EXTENSIONS = {'png', 'bmp', 'jpg', 'jpe', 'jpeg', 'gif'}
 
 # Obtain the flask app object
 app = flask.Flask(__name__)
@@ -185,7 +185,7 @@ def start_tornado(app, port=5000):
     http_server = tornado.httpserver.HTTPServer(
         tornado.wsgi.WSGIContainer(app))
     http_server.listen(port)
-    print("Tornado server starting on port {}".format(port))
+    print(f"Tornado server starting on port {port}")
     tornado.ioloop.IOLoop.instance().start()
 
 

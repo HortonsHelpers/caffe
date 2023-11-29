@@ -106,11 +106,7 @@ def _Net_forward(self, blobs=None, start=None, end=None, **kwargs):
     if blobs is None:
         blobs = []
 
-    if start is not None:
-        start_ind = list(self._layer_names).index(start)
-    else:
-        start_ind = 0
-
+    start_ind = list(self._layer_names).index(start) if start is not None else 0
     if end is not None:
         end_ind = list(self._layer_names).index(end)
         outputs = set(self.top_names[end] + blobs)
@@ -205,9 +201,9 @@ def _Net_forward_all(self, blobs=None, **kwargs):
     # Package in ndarray.
     for out in all_outs:
         all_outs[out] = np.asarray(all_outs[out])
-    # Discard padding.
-    pad = len(six.next(six.itervalues(all_outs))) - len(six.next(six.itervalues(kwargs)))
-    if pad:
+    if pad := len(six.next(six.itervalues(all_outs))) - len(
+        six.next(six.itervalues(kwargs))
+    ):
         for out in all_outs:
             all_outs[out] = all_outs[out][:-pad]
     return all_outs
@@ -249,9 +245,9 @@ def _Net_forward_backward_all(self, blobs=None, diffs=None, **kwargs):
     for out, diff in zip(all_outs, all_diffs):
         all_outs[out] = np.asarray(all_outs[out])
         all_diffs[diff] = np.asarray(all_diffs[diff])
-    # Discard padding at the end and package in ndarray.
-    pad = len(six.next(six.itervalues(all_outs))) - len(six.next(six.itervalues(kwargs)))
-    if pad:
+    if pad := len(six.next(six.itervalues(all_outs))) - len(
+        six.next(six.itervalues(kwargs))
+    ):
         for out, diff in zip(all_outs, all_diffs):
             all_outs[out] = all_outs[out][:-pad]
             all_diffs[diff] = all_diffs[diff][:-pad]

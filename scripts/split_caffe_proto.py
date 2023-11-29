@@ -28,8 +28,6 @@ caffe_proto_fn = os.path.join(
 with open(caffe_proto_fn, 'r') as fin:
 
     for m in r.finditer(fin.read(), re.MULTILINE):
-        fn = os.path.join(
-            script_path,
-            '../docs/_includes/proto/%s.txt' % m.group(1))
+        fn = os.path.join(script_path, f'../docs/_includes/proto/{m.group(1)}.txt')
         with open(fn, 'w') as fout:
             fout.write(m.group(0))

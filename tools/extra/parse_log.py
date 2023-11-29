@@ -41,8 +41,7 @@ def parse_log(path_to_log):
         last_time = start_time
 
         for line in f:
-            iteration_match = regex_iteration.search(line)
-            if iteration_match:
+            if iteration_match := regex_iteration.search(line):
                 iteration = float(iteration_match.group(1))
             if iteration == -1:
                 # Only start parsing for other stuff if we've found the first
@@ -64,8 +63,7 @@ def parse_log(path_to_log):
 
             seconds = (time - start_time).total_seconds()
 
-            learning_rate_match = regex_learning_rate.search(line)
-            if learning_rate_match:
+            if learning_rate_match := regex_learning_rate.search(line):
                 learning_rate = float(learning_rate_match.group(1))
 
             train_dict_list, train_row = parse_line_for_net_output(
@@ -93,8 +91,7 @@ def parse_line_for_net_output(regex_obj, row, row_dict_list,
     version of the current row_dict_list
     """
 
-    output_match = regex_obj.search(line)
-    if output_match:
+    if output_match := regex_obj.search(line):
         if not row or row['NumIters'] != iteration:
             # Push the last row and start a new one
             if row:
@@ -147,10 +144,10 @@ def save_csv_files(logfile_path, output_dir, train_dict_list, test_dict_list,
     """
 
     log_basename = os.path.basename(logfile_path)
-    train_filename = os.path.join(output_dir, log_basename + '.train')
+    train_filename = os.path.join(output_dir, f'{log_basename}.train')
     write_csv(train_filename, train_dict_list, delimiter, verbose)
 
-    test_filename = os.path.join(output_dir, log_basename + '.test')
+    test_filename = os.path.join(output_dir, f'{log_basename}.test')
     write_csv(test_filename, test_dict_list, delimiter, verbose)
 
 
@@ -195,8 +192,7 @@ def parse_args():
                         help=('Column delimiter in output files '
                               '(default: \'%(default)s\')'))
 
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
 def main():
