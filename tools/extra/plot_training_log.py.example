@@ -12,7 +12,7 @@ import matplotlib.markers as mks
 def get_log_parsing_script():
     dirname = os.path.dirname(os.path.abspath(inspect.getfile(
         inspect.currentframe())))
-    return dirname + '/parse_log.sh'
+    return f'{dirname}/parse_log.sh'
 
 def get_log_file_suffix():
     return '.log'
@@ -27,15 +27,24 @@ def is_x_axis_field(field):
 def create_field_index():
     train_key = 'Train'
     test_key = 'Test'
-    field_index = {train_key:{'Iters':0, 'Seconds':1, train_key + ' loss':2,
-                              train_key + ' learning rate':3},
-                   test_key:{'Iters':0, 'Seconds':1, test_key + ' accuracy':2,
-                             test_key + ' loss':3}}
+    field_index = {
+        train_key: {
+            'Iters': 0,
+            'Seconds': 1,
+            f'{train_key} loss': 2,
+            f'{train_key} learning rate': 3,
+        },
+        test_key: {
+            'Iters': 0,
+            'Seconds': 1,
+            f'{test_key} accuracy': 2,
+            f'{test_key} loss': 3,
+        },
+    }
     fields = set()
-    for data_file_type in field_index.keys():
+    for data_file_type in field_index:
         fields = fields.union(set(field_index[data_file_type].keys()))
-    fields = list(fields)
-    fields.sort()
+    fields = sorted(fields)
     return field_index, fields
 
 def get_supported_chart_types():
@@ -44,26 +53,23 @@ def get_supported_chart_types():
     supported_chart_types = []
     for i in xrange(num_fields):
         if not is_x_axis_field(fields[i]):
-            for j in xrange(num_fields):
-                if i != j and is_x_axis_field(fields[j]):
-                    supported_chart_types.append('%s%s%s' % (
-                        fields[i], get_chart_type_description_separator(),
-                        fields[j]))
+            supported_chart_types.extend(
+                f'{fields[i]}{get_chart_type_description_separator()}{fields[j]}'
+                for j in xrange(num_fields)
+                if i != j and is_x_axis_field(fields[j])
+            )
     return supported_chart_types
 
 def get_chart_type_description(chart_type):
     supported_chart_types = get_supported_chart_types()
-    chart_type_description = supported_chart_types[chart_type]
-    return chart_type_description
+    return supported_chart_types[chart_type]
 
 def get_data_file_type(chart_type):
     description = get_chart_type_description(chart_type)
-    data_file_type = description.split()[0]
-    return data_file_type
+    return description.split()[0]
 
 def get_data_file(chart_type, path_to_log):
-    return (os.path.basename(path_to_log) + '.' +
-            get_data_file_type(chart_type).lower())
+    return f'{os.path.basename(path_to_log)}.{get_data_file_type(chart_type).lower()}'
 
 def get_field_descriptions(chart_type):
     description = get_chart_type_description(chart_type).split(
@@ -95,22 +101,23 @@ def random_marker():
     return markers.keys()[idx]
 
 def get_data_label(path_to_log):
-    label = path_to_log[path_to_log.rfind('/')+1 : path_to_log.rfind(
-        get_log_file_suffix())]
-    return label
+    return path_to_log[
+        path_to_log.rfind('/') + 1 : path_to_log.rfind(get_log_file_suffix())
+    ]
 
 def get_legend_loc(chart_type):
     x_axis, y_axis = get_field_descriptions(chart_type)
-    loc = 'lower right'
     if y_axis.find('accuracy') != -1:
         pass
-    if y_axis.find('loss') != -1 or y_axis.find('learning rate') != -1:
-        loc = 'upper right'
-    return loc
+    return (
+        'upper right'
+        if y_axis.find('loss') != -1 or y_axis.find('learning rate') != -1
+        else 'lower right'
+    )
 
 def plot_chart(chart_type, path_to_png, path_to_log_list):
     for path_to_log in path_to_log_list:
-        os.system('%s %s' % (get_log_parsing_script(), path_to_log))
+        os.system(f'{get_log_parsing_script()} {path_to_log}')
         data_file = get_data_file(chart_type, path_to_log)
         x_axis_field, y_axis_field = get_field_descriptions(chart_type)
         x, y = get_field_indices(x_axis_field, y_axis_field)

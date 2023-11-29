@@ -30,9 +30,9 @@ def format_param(param):
     if len(param.name) > 0:
         out.append(param.name)
     if param.lr_mult != 1:
-        out.append('x{}'.format(param.lr_mult))
+        out.append(f'x{param.lr_mult}')
     if param.decay_mult != 1:
-        out.append('Dx{}'.format(param.decay_mult))
+        out.append(f'Dx{param.decay_mult}')
     return ' '.join(out)
 
 def printed_len(s):
@@ -75,18 +75,18 @@ def summarize_net(net):
             if top in disconnected_tops:
                 top = '\033[1;4m' + top
             if len(lr.loss_weight) > 0:
-                top = '{} * {}'.format(lr.loss_weight[ind], top)
-            tops.append('\033[{}m{}\033[0m'.format(color, top))
+                top = f'{lr.loss_weight[ind]} * {top}'
+            tops.append(f'\033[{color}m{top}\033[0m')
         top_str = ', '.join(tops)
 
         bottoms = []
         for bottom in lr.bottom:
             color = colors.get(bottom, DISCONNECTED_COLOR)
-            bottoms.append('\033[{}m{}\033[0m'.format(color, bottom))
+            bottoms.append(f'\033[{color}m{bottom}\033[0m')
         bottom_str = ', '.join(bottoms)
 
         if lr.type == 'Python':
-            type_str = lr.python_param.module + '.' + lr.python_param.layer
+            type_str = f'{lr.python_param.module}.{lr.python_param.layer}'
         else:
             type_str = lr.type
 
@@ -97,16 +97,16 @@ def summarize_net(net):
                 and len(conv_param.kernel_size) == 1):
             arg_str = str(conv_param.kernel_size[0])
             if len(conv_param.stride) > 0 and conv_param.stride[0] != 1:
-                arg_str += '/' + str(conv_param.stride[0])
+                arg_str += f'/{str(conv_param.stride[0])}'
             if len(conv_param.pad) > 0 and conv_param.pad[0] != 0:
-                arg_str += '+' + str(conv_param.pad[0])
-            arg_str += ' ' + str(conv_param.num_output)
+                arg_str += f'+{str(conv_param.pad[0])}'
+            arg_str += f' {str(conv_param.num_output)}'
             if conv_param.group != 1:
-                arg_str += '/' + str(conv_param.group)
+                arg_str += f'/{str(conv_param.group)}'
         elif lr.type == 'Pooling':
             arg_str = str(lr.pooling_param.kernel_size)
             if lr.pooling_param.stride != 1:
-                arg_str += '/' + str(lr.pooling_param.stride)
+                arg_str += f'/{str(lr.pooling_param.stride)}'
             if lr.pooling_param.pad != 0:
                 arg_str += '+' + str(lr.pooling_param.pad)
         else:
@@ -115,7 +115,7 @@ def summarize_net(net):
         if len(lr.param) > 0:
             param_strs = map(format_param, lr.param)
             if max(map(len, param_strs)) > 0:
-                param_str = '({})'.format(', '.join(param_strs))
+                param_str = f"({', '.join(param_strs)})"
             else:
                 param_str = ''
         else:

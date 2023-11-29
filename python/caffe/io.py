@@ -21,11 +21,7 @@ def blobproto_to_array(blob, return_diff=False):
     unless return_diff is True, in which case we will return the diff.
     """
     # Read the data into an array
-    if return_diff:
-        data = np.array(blob.diff)
-    else:
-        data = np.array(blob.data)
-
+    data = np.array(blob.diff) if return_diff else np.array(blob.data)
     # Reshape the array
     if blob.HasField('num') or blob.HasField('channels') or blob.HasField('height') or blob.HasField('width'):
         # Use legacy 4D shape
@@ -116,8 +112,7 @@ class Transformer:
 
     def __check_input(self, in_):
         if in_ not in self.inputs:
-            raise Exception('{} is not one of the net inputs: {}'.format(
-                in_, self.inputs))
+            raise Exception(f'{in_} is not one of the net inputs: {self.inputs}')
 
     def preprocess(self, in_, data):
         """
@@ -323,7 +318,7 @@ def resize_image(im, new_dims, interp_order=1):
     -------
     im : resized ndarray with shape (new_dims[0], new_dims[1], K)
     """
-    if im.shape[-1] == 1 or im.shape[-1] == 3:
+    if im.shape[-1] in [1, 3]:
         im_min, im_max = im.min(), im.max()
         if im_max > im_min:
             # skimage is fast but only understands {1,3} channel images
